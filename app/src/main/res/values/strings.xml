@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">MobileRechargeCloneApp</string>
+    <string-array name="operatorAarray">
+        <item>Airtel</item>
+        <item>Banglalink</item>
+        <item>Grameenphone</item>
+        <item>Robi</item>
+        <item>Teletalk</item>
+    </string-array>
+
+    <string-array name="mobileTypeAarray">
+        <item>Pre Paid</item>
+        <item>Post Paid</item>
+    </string-array>
+
+
+</resources>
