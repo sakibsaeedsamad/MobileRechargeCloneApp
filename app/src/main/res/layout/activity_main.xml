@@ -35,18 +35,54 @@
     </LinearLayout>
 
 
-
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recentContactRecyclerView"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/contactRecyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Recent Contact" />
+
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recentContactRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="All Contact" />
+
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/contactRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
 
 
 </LinearLayout>

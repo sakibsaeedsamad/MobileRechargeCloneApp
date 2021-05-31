@@ -5,6 +5,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.ContactsContract
@@ -13,6 +14,8 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.PermissionToken
@@ -24,16 +27,13 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), ContactAdapter.OnItemClickListener,
     RecentContactAdapter.OnRecentItemClickListener {
-
+    private val PERMISSIONS_REQUEST_READ_CONTACTS = 100
 
     private var model: MutableList<Contact>? = null
     private var adapter: ContactAdapter? = null
 
     private var rCModel: MutableList<Contact>? = null
     private var rCAdapter: RecentContactAdapter? = null
-
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +43,7 @@ class MainActivity : AppCompatActivity(), ContactAdapter.OnItemClickListener,
         val contactDao = ContactDatabase.getDatabase(getApplication())?.contactDao()
         rCModel = contactDao?.getAllContactInfo()
 
+        model = getContacts()
         adapter = ContactAdapter(model!!, this)
         adapter?.notifyDataSetChanged()
         contactRecyclerView.layoutManager = LinearLayoutManager(this)
@@ -92,29 +93,64 @@ class MainActivity : AppCompatActivity(), ContactAdapter.OnItemClickListener,
 
 
     private fun requestContactPermission() {
-        Dexter.withActivity(this)
-            .withPermission(Manifest.permission.READ_CONTACTS)
-            .withListener(object : PermissionListener {
-                override fun onPermissionGranted(response: PermissionGrantedResponse) {
-                    // permission is granted
-                    model = getContacts()
-                }
 
-                override fun onPermissionDenied(response: PermissionDeniedResponse) {
-                    // check for permanent denial of permission
-                    if (response.isPermanentlyDenied) {
-                        showSettingsDialog()
-                    }
-                }
+//        Dexter.withActivity(this)
+//            .withPermission(Manifest.permission.READ_CONTACTS)
+//            .withListener(object : PermissionListener {
+//                override fun onPermissionGranted(response: PermissionGrantedResponse) {
+//                    // permission is granted
+//                    getContacts()
+//                }
+//
+//                override fun onPermissionDenied(response: PermissionDeniedResponse) {
+//                    // check for permanent denial of permission
+//                    if (response.isPermanentlyDenied) {
+//                        showSettingsDialog()
+//                    }
+//                }
+//
+//                override fun onPermissionRationaleShouldBeShown(
+//                    permission: PermissionRequest?,
+//                    token: PermissionToken
+//                ) {
+//                    token.continuePermissionRequest()
+//                }
+//            }).check()
 
-                override fun onPermissionRationaleShouldBeShown(
-                    permission: PermissionRequest?,
-                    token: PermissionToken
-                ) {
-                    token.continuePermissionRequest()
-                }
-            }).check()
+
+        var builder = StringBuilder()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(
+                Manifest.permission.READ_CONTACTS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestPermissions(
+                arrayOf(Manifest.permission.READ_CONTACTS),
+                PERMISSIONS_REQUEST_READ_CONTACTS
+            )
+            //callback onRequestPermissionsResult
+        } else {
+            //builder =
+            getContacts()
+            //listContacts.text = builder.toString()
+        }
+
+
     }
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == PERMISSIONS_REQUEST_READ_CONTACTS) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getContacts()
+            } else {
+                requestContactPermission()
+            }
+        }
+    }
+
 
     private fun getContacts(): MutableList<Contact>? {
         val contactList: MutableList<Contact> = ArrayList()
@@ -193,19 +229,15 @@ class MainActivity : AppCompatActivity(), ContactAdapter.OnItemClickListener,
             Toast.makeText(this, "Please select 11 digit Number!", Toast.LENGTH_SHORT).show()
         }
 
-        if(rCModel!!.size < 5)
-        {
+        if (rCModel!!.size < 5) {
             contactDao?.insertContact(contact)
-        }
-        else{
+        } else {
 
-            for(i in rCModel!!.indices) {
-                if (rCModel!![i].number == uNumber)
-                {
-                 contactDao?.updateContact(rCModel!![i].id,uName,uNumber)
-                }
-                else{
-                    contactDao?.updateContact(rCModel!![4].id,uName,uNumber)
+            for (i in rCModel!!.indices) {
+                if (rCModel!![i].number == uNumber) {
+                    contactDao?.updateContact(rCModel!![i].id, uName, uNumber)
+                } else {
+                    contactDao?.updateContact(rCModel!![4].id, uName, uNumber)
                 }
             }
 

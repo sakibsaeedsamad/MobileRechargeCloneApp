@@ -1,5 +1,6 @@
 package com.sssakib.mobilerechargecloneapp
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_confirmation.*
@@ -24,5 +25,11 @@ class ConfirmationActivity : AppCompatActivity() {
         amountTV.setText(amount)
 
 
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        startActivity(Intent(this, RechargeDetailsActivity::class.java))
+        finish()
     }
 }
